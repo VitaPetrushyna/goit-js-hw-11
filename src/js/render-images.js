@@ -1,11 +1,13 @@
 export { renderCardImages };
 
+const galleryContainerImg = document.querySelector('.gallery');
+
 function renderCardImages(images) {
   const markup = images
     .map(({ webformatURL, tags, likes, views, comments, downloads }) => {
       return `
           <div class="photo-card">
-  <img src="${webformatURL}" alt="${tags}" loading="lazy" />
+  <img src="${webformatURL}" alt="${tags}" loading="lazy" width="320" />
   <div class="info">
     <p class="info-item">
       <b>Likes</b>${likes}
@@ -24,5 +26,5 @@ function renderCardImages(images) {
     })
     .join('');
 
-  gallery.insertAdjacentHTML('beforeend', markup);
+  galleryContainerImg.insertAdjacentHTML('beforeend', markup);
 }
