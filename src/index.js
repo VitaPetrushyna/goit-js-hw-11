@@ -11,48 +11,56 @@ const galleryContainerImg = document.querySelector('.gallery');
 const loadMoreBtn = document.querySelector('.load-more');
 
 const newApiService = new NewApiService();
+
 console.log(newApiService);
+
 formSearch.addEventListener('submit', onSearchImages);
 loadMoreBtn.addEventListener('click', onLoadMore);
 
+loadMoreBtn.style.display = 'none';
+
 function onSearchImages(e) {
   e.preventDefault();
-  newApiService.query = e.currentTarget.elements.searchQuery.value.trim();
-  newApiService.resetPage();
-  newApiService.fetchArticles().then(renderCardImages);
 
-  // fetchImages(name, page, perPage)
-  //   .then(renderCardImages)
-  //   .catch(error => {
-  //     if (name !== '') {
-  //       onFetchError(error);
-  //     }
-  //   })
-  //   .finally(() => form.reset());
+  newApiService.query = e.currentTarget.elements.searchQuery.value.trim();
+
+  if (newApiService.query === '') {
+    onResultSearchError();
+    return;
+  }
+
+  clearImagesContainer();
+  newApiService.resetPage();
+  loadMoreBtn.style.display = 'block';
+
+  newApiService.fetchArticles().then(renderCardImages);
 }
 
 function onLoadMore() {
   newApiService.fetchArticles().then(renderCardImages);
 }
 
-// function onFetchError(error) {
-//   Notiflix.Notify.warning('Oops, there is no images with that name');
-// }
-// function onResultSearch() {
-//   Notiflix.Notify.failure(
-//     'Sorry, there are no images matching your search query. Please try again.'
-//   );
-// }
+function clearImagesContainer() {
+  galleryContainerImg.innerHTML = '';
+}
 
-// function onСollectionEnded() {
-//   Notiflix.Notify.failure(
-//     "We're sorry, but you've reached the end of search results."
-//   );
-// }
+function onResultSearchError() {
+  Notiflix.Notify.failure(
+    'Sorry, there are no images matching your search query. Please try again.'
+  );
+}
 
-// function onFoundTotalHits() {
-//   Notiflix.Notify.success('Hooray! We found totalHits images.');
-// }
+function onСollectionEnded() {
+  Notiflix.Notify.failure(
+    "We're sorry, but you've reached the end of search results."
+  );
+}
+
+function onFoundTotalHits() {
+  Notiflix.Notify.success(
+    'Hooray! We found ${newApiService.totalHits} images.'
+  );
+}
 
 // const BASE_URL = 'https://pixabay.com/api/';
 // const KEY = '29504531-9bab283f8cb4291b644273701';
@@ -61,3 +69,12 @@ function onLoadMore() {
 // )
 //   .then(r => r.json())
 //   .then(console.log);
+
+// fetchImages(name, page, perPage)
+//   .then(renderCardImages)
+//   .catch(error => {
+//     if (name !== '') {
+//       onFetchError(error);
+//     }
+//   })
+//   .finally(() => form.reset());

@@ -13,7 +13,7 @@ export default class NewApiService {
     return fetch(
       `${BASE_URL}?key=${KEY}&q=${this.query}=photo&orientation=horizontal&safesearch=true&page=${this.page}&per_page=${this.perPage}`
     )
-      .then(r => r.json())
+      .then(response => response.json())
       .then(data => {
         this.incrementPage();
 
