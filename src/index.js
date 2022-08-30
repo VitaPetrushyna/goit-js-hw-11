@@ -1,43 +1,50 @@
 import Notiflix from 'notiflix';
 import 'notiflix/dist/notiflix-3.2.5.min.css';
-// import { fetchImages } from './js/fatch-images';
-import NewApiService from './js/fatch-images';
+import { fetchImages } from './js/fatch-images';
 import { renderCardImages } from './js/render-images';
+// import NewApiService from './js/fatch-images';
 
 const formSearch = document.querySelector('.search-form');
-// const inputSearch = document.querySelector('input[name="searchQuery"]');
-// const buttonSubmit = document.querySelector('button');
+const buttonSubmit = document.querySelector('.button-form');
 const galleryContainerImg = document.querySelector('.gallery');
 const loadMoreBtn = document.querySelector('.load-more');
 
-const newApiService = new NewApiService();
-
-console.log(newApiService);
+let query = '';
+// let page = 1;
+const perPage = 4;
 
 formSearch.addEventListener('submit', onSearchImages);
 loadMoreBtn.addEventListener('click', onLoadMore);
 
 loadMoreBtn.style.display = 'none';
+// buttonSubmit.style.display = 'none';
 
 function onSearchImages(e) {
   e.preventDefault();
 
-  newApiService.query = e.currentTarget.elements.searchQuery.value.trim();
+  query = e.currentTarget.elements.searchQuery.value.trim();
 
-  if (newApiService.query === '') {
+  page = 1;
+  clearImagesContainer();
+
+  if (query === '') {
     onResultSearchError();
     return;
   }
 
-  clearImagesContainer();
-  newApiService.resetPage();
-  loadMoreBtn.style.display = 'block';
-
-  newApiService.fetchArticles().then(renderCardImages);
+  fetchImages(query, page, perPage).then(({ data }) => {
+    renderCardImages(data.hits);
+    console.log(data.totalHits);
+    loadMoreBtn.style.display = 'block';
+    page += 1;
+  });
 }
 
 function onLoadMore() {
-  newApiService.fetchArticles().then(renderCardImages);
+  fetchImages(query, page, perPage).then(({ data }) => {
+    renderCardImages(data.hits);
+    page += 1;
+  });
 }
 
 function clearImagesContainer() {
@@ -62,14 +69,7 @@ function onFoundTotalHits() {
   );
 }
 
-// const BASE_URL = 'https://pixabay.com/api/';
-// const KEY = '29504531-9bab283f8cb4291b644273701';
-// fetch(
-//   `${BASE_URL}?key=${KEY}&q=cat&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=${perPage}`
-// )
-//   .then(r => r.json())
-//   .then(console.log);
-
+// ------ Через класс (не доделано) -------
 // fetchImages(name, page, perPage)
 //   .then(renderCardImages)
 //   .catch(error => {
@@ -78,3 +78,30 @@ function onFoundTotalHits() {
 //     }
 //   })
 //   .finally(() => form.reset());
+
+// const newApiService = new NewApiService();
+// console.log(newApiService);
+
+// formSearch.addEventListener('submit', onSearchImages);
+// loadMoreBtn.addEventListener('click', onLoadMore);
+
+// loadMoreBtn.style.display = 'none';
+
+// function onSearchImages(e) {
+//   e.preventDefault();
+
+//   newApiService.query = e.currentTarget.elements.searchQuery.value.trim();
+
+//   if (newApiService.query === '') {
+//     onResultSearchError();
+//     return;
+//   }
+
+//   clearImagesContainer();
+//   newApiService.resetPage();
+//   loadMoreBtn.style.display = 'block';
+
+//   newApiService.fetchArticles().then(images => {
+//     renderCardImages(images);
+//   });
+// }
