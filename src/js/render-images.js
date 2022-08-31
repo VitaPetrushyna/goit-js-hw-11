@@ -5,10 +5,20 @@ const galleryContainerImg = document.querySelector('.gallery');
 function renderCardImages(images) {
   const markup = images
     .map(image => {
-      const { webformatURL, tags, likes, views, comments, downloads } = image;
+      const {
+        largeImageURL,
+        webformatURL,
+        tags,
+        likes,
+        views,
+        comments,
+        downloads,
+      } = image;
       return `
           <div class="photo-card">
-  <img src="${webformatURL}" alt="${tags}" loading="lazy" class="images"  />
+          <a class="gallery-item" href="${webformatURL}" >
+  <img src="${webformatURL}" alt="${tags}" loading="lazy" class="images" />
+   </a>
   <div class="info">
     <p class="info-item">
       <b>Likes</b><br>${likes}

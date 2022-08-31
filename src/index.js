@@ -2,7 +2,8 @@ import Notiflix from 'notiflix';
 import 'notiflix/dist/notiflix-3.2.5.min.css';
 import { fetchImages } from './js/fatch-images';
 import { renderCardImages } from './js/render-images';
-// import NewApiService from './js/fatch-images';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const formSearch = document.querySelector('.search-form');
 const buttonSubmit = document.querySelector('.button-form');
@@ -10,8 +11,8 @@ const galleryContainerImg = document.querySelector('.gallery');
 const loadMoreBtn = document.querySelector('.load-more');
 
 let query = '';
-// let page = 1;
-const perPage = 4;
+let page = 1;
+const perPage = 40;
 
 formSearch.addEventListener('submit', onSearchImages);
 loadMoreBtn.addEventListener('click', onLoadMore);
@@ -24,6 +25,9 @@ function onSearchImages(e) {
 
   query = e.currentTarget.elements.searchQuery.value.trim();
 
+  loadMoreBtn.style.display = 'none';
+  // buttonSubmit.disabled = true;
+
   page = 1;
   clearImagesContainer();
 
@@ -33,17 +37,44 @@ function onSearchImages(e) {
   }
 
   fetchImages(query, page, perPage).then(({ data }) => {
-    renderCardImages(data.hits);
-    console.log(data.totalHits);
-    loadMoreBtn.style.display = 'block';
-    page += 1;
+    if (data.totalHits === 0) {
+      onResultSearchError();
+    } else {
+      buttonSubmit.disabled = false;
+      onFoundTotalHits(data);
+      renderCardImages(data.hits);
+      const lightbox = new SimpleLightbox('.gallery a', {
+        captions: true,
+        captionType: 'attr',
+        captionsData: 'alt',
+        captionPosition: 'bottom',
+        captionDelay: 250,
+      });
+      loadMoreBtn.style.display = 'block';
+
+      page += 1;
+    }
   });
 }
 
 function onLoadMore() {
   fetchImages(query, page, perPage).then(({ data }) => {
     renderCardImages(data.hits);
+    const lightbox = new SimpleLightbox('.gallery a', {
+      captions: true,
+      captionType: 'attr',
+      captionsData: 'alt',
+      captionPosition: 'bottom',
+      captionDelay: 250,
+    });
     page += 1;
+
+    const totalPage = data.hits / perPage;
+    console.log(totalPage);
+    if (page > totalPage) {
+      loadMoreBtn.style.display = 'none';
+      onСollectionEnded();
+    }
   });
 }
 
@@ -58,15 +89,13 @@ function onResultSearchError() {
 }
 
 function onСollectionEnded() {
-  Notiflix.Notify.failure(
+  Notiflix.Notify.info(
     "We're sorry, but you've reached the end of search results."
   );
 }
 
-function onFoundTotalHits() {
-  Notiflix.Notify.success(
-    'Hooray! We found ${newApiService.totalHits} images.'
-  );
+function onFoundTotalHits(data) {
+  Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
 }
 
 // ------ Через класс (не доделано) -------
