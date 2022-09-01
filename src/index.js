@@ -18,7 +18,6 @@ formSearch.addEventListener('submit', onSearchImages);
 loadMoreBtn.addEventListener('click', onLoadMore);
 
 loadMoreBtn.style.display = 'none';
-// buttonSubmit.style.display = 'none';
 
 function onSearchImages(e) {
   e.preventDefault();
@@ -43,13 +42,7 @@ function onSearchImages(e) {
       buttonSubmit.disabled = false;
       onFoundTotalHits(data);
       renderCardImages(data.hits);
-      const lightbox = new SimpleLightbox('.gallery a', {
-        captions: true,
-        captionType: 'attr',
-        captionsData: 'alt',
-        captionPosition: 'bottom',
-        captionDelay: 250,
-      });
+      const lightbox = new SimpleLightbox('.gallery a').refresh();
       loadMoreBtn.style.display = 'block';
 
       page += 1;
@@ -60,13 +53,7 @@ function onSearchImages(e) {
 function onLoadMore() {
   fetchImages(query, page, perPage).then(({ data }) => {
     renderCardImages(data.hits);
-    const lightbox = new SimpleLightbox('.gallery a', {
-      captions: true,
-      captionType: 'attr',
-      captionsData: 'alt',
-      captionPosition: 'bottom',
-      captionDelay: 250,
-    });
+    const lightbox = new SimpleLightbox('.gallery a').refresh();
     page += 1;
 
     const totalPage = data.hits / perPage;
